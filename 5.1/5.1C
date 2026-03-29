@@ -1,0 +1,32 @@
+g = int(input())
+
+# Считываем все группы
+groups = []
+max_id = 0
+
+for _ in range(g):
+    parts = list(map(int, input().split()))
+    k = parts[0]
+    group = parts[1:]
+    groups.append(group)
+    max_id = max(max_id, max(group))
+
+n = max_id  # количество вершин
+
+# Матрица смежности
+adj = [[0] * n for _ in range(n)]
+
+# Для каждой группы: все пары людей внутри группы
+for group in groups:
+    k = len(group)
+    for i in range(k):
+        for j in range(i + 1, k):
+            u = group[i] - 1
+            v = group[j] - 1
+            adj[u][v] = 1
+            adj[v][u] = 1
+
+# Вывод
+print(n)
+for i in range(n):
+    print(' '.join(map(str, adj[i])))
