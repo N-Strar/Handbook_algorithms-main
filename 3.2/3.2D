@@ -1,0 +1,25 @@
+n, m = map(int, input().split())
+
+# Читаем матрицу A
+A = []
+for _ in range(n):
+    row = list(map(int, input().split()))
+    A.append(row)
+
+# Читаем матрицу B
+B = []
+for _ in range(n):
+    row = list(map(int, input().split()))
+    B.append(row)
+
+# Суммируем матрицы
+C = []
+for i in range(n):
+    row = []
+    for j in range(m):
+        row.append(A[i][j] + B[i][j])
+    C.append(row)
+
+# Выводим результат
+for row in C:
+    print(' '.join(map(str, row)))
