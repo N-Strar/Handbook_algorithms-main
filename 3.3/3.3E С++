@@ -1,0 +1,65 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+int main() {
+    int n;
+    std::cin >> n;
+    
+    std::vector<int> pos_idx, neg_idx, zero_idx;
+    int pnegmax = -1;
+    long long max_neg = -1e18; // наибольшее отрицательное (ближайшее к нулю)
+    
+    for (int i = 0; i < n; ++i) {
+        int x;
+        std::cin >> x;
+        
+        if (x > 0) {
+            pos_idx.push_back(i + 1);
+        } else if (x < 0) {
+            if (pnegmax == -1 || x > max_neg) {
+                max_neg = x;
+                pnegmax = i + 1;
+            }
+            neg_idx.push_back(i + 1);
+        } else {
+            zero_idx.push_back(i + 1);
+        }
+    }
+    
+    if (n == 1) {
+        std::cout << 1 << "\n";
+        return 0;
+    }
+    
+    if (zero_idx.size() == n) {
+        std::cout << zero_idx[0] << "\n";
+        return 0;
+    }
+    
+    std::vector<int> result;
+    
+    for (int idx : pos_idx) result.push_back(idx);
+    
+    if (neg_idx.size() % 2 == 0) {
+        for (int idx : neg_idx) result.push_back(idx);
+    } else {
+        for (int idx : neg_idx) {
+            if (idx != pnegmax) result.push_back(idx);
+        }
+    }
+    
+    if (result.empty()) {
+        if (!zero_idx.empty()) {
+            result.push_back(zero_idx[0]);
+        } else {
+            result.push_back(neg_idx[0]);
+        }
+    }
+    
+    for (size_t i = 0; i < result.size(); ++i) {
+        std::cout << result[i] << (i + 1 == result.size() ? "\n" : " ");
+    }
+    
+    return 0;
+}
