@@ -1,0 +1,43 @@
+from collections import deque
+
+def solve():
+    X, Y = map(int, input().split())
+    if X == Y:
+        print(0)
+        return
+    MAX = 200000  # верхняя граница, можно увеличить, например, до 1e6
+    # но лучше взять max(Y, X) * 2 + 100
+    limit = max(X, Y) * 2 + 100
+    if limit < 200000:
+        limit = 200000
+    dist = [-1] * (limit + 1)
+    q = deque()
+    dist[X] = 0
+    q.append(X)
+    while q:
+        n = q.popleft()
+        if n == Y:
+            print(dist[n])
+            return
+        # генерируем переходы
+        for d in range(10):
+            # сложение
+            nxt = n + d
+            if nxt <= limit and dist[nxt] == -1:
+                dist[nxt] = dist[n] + 1
+                q.append(nxt)
+            # вычитание
+            nxt = n - d
+            if nxt >= 0 and dist[nxt] == -1:
+                dist[nxt] = dist[n] + 1
+                q.append(nxt)
+            # умножение
+            nxt = n * d
+            if nxt <= limit and dist[nxt] == -1:
+                dist[nxt] = dist[n] + 1
+                q.append(nxt)
+    # если не нашли, но по условию должно быть решение, так как можно дойти через 0
+    print(-1)
+
+if __name__ == "__main__":
+    solve()
