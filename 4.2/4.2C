@@ -1,7 +1,17 @@
 n = int(input())
 
-a, b = 1, 1
-while b <= n:
-    a, b = b, a + b
+if n == 1:
+    print(1, 1)
+else:
+    a, b = 1, 1
+    while b <= n:
+        a, b = b, a + b
 
-print(a, b - a)  # b - a = предыдущее число Фибоначчи
+    x, y = 1, 1
+    while y <= n:
+        x, y = y, x + y
+
+    fib = [1, 1]
+    while fib[-1] <= n:
+        fib.append(fib[-1] + fib[-2])
+    print(fib[-3], fib[-2])
