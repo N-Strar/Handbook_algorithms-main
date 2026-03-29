@@ -1,0 +1,28 @@
+def fib_representation(n):
+    if n == 0:
+        return "0"
+    
+    # Генерируем числа Фибоначчи до n
+    fib = [1, 2]  # F2=1, F3=2
+    while fib[-1] <= n:
+        fib.append(fib[-1] + fib[-2])
+    
+    # Убираем последнее, которое больше n
+    if fib[-1] > n:
+        fib.pop()
+    
+    # Жадный алгоритм
+    result = []
+    for i in range(len(fib) - 1, -1, -1):
+        if fib[i] <= n:
+            result.append('1')
+            n -= fib[i]
+        else:
+            result.append('0')
+    
+    # Убираем ведущие нули
+    return ''.join(result).lstrip('0')
+
+if __name__ == "__main__":
+    n = int(input())
+    print(fib_representation(n))
