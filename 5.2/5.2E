@@ -1,0 +1,90 @@
+from collections import deque
+import sys
+
+def solve() -> None:
+    input = sys.stdin.readline
+    n, m = map(int, input().split())
+    lab = [list(input().strip()) for _ in range(n)]
+
+    # Находим старт и финиш
+    sx = sy = fx = fy = -1
+    for i in range(n):
+        for j in range(m):
+            if lab[i][j] == 'S':
+                sx, sy = i, j
+            elif lab[i][j] == 'F':
+                fx, fy = i, j
+
+    # Читаем соответствия дверей и ключей
+    k = int(input())
+    door_to_idx = {}
+    key_to_idx = {}
+    for i in range(k):
+        d, kc = input().split()
+        door_to_idx[d] = i
+        key_to_idx[kc] = i
+
+    max_mask = 1 << k
+
+    # dist[x][y][mask] = длина пути
+    dist = [[[-1] * max_mask for _ in range(m)] for _ in range(n)]
+    parent = {}                     # (x,y,mask) -> (px,py,pmask,action)
+    q = deque()
+    dist[sx][sy][0] = 0
+    q.append((sx, sy, 0))
+
+    dirs = [(-1, 0, 'U'), (1, 0, 'D'), (0, -1, 'L'), (0, 1, 'R')]
+
+    while q:
+        x, y, mask = q.popleft()
+
+        # Если достигли выхода
+        if (x, y) == (fx, fy):
+            # Восстанавливаем путь
+            path = []
+            cur = (x, y, mask)
+            while cur != (sx, sy, 0):
+                px, py, pmask, act = parent[cur]
+                path.append(act)
+                cur = (px, py, pmask)
+            path.reverse()
+            print(dist[x][y][mask])
+            print(''.join(path))
+            return
+
+        # Движения в соседние клетки
+        for dx, dy, act in dirs:
+            nx, ny = x + dx, y + dy
+            if not (0 <= nx < n and 0 <= ny < m):
+                continue
+            cell = lab[nx][ny]
+            if cell == '#':
+                continue
+            # Проверка двери
+            if cell.isupper() and cell not in ('S', 'F'):
+                idx = door_to_idx.get(cell)
+                if idx is None or not (mask & (1 << idx)):
+                    continue
+            new_mask = mask
+            if dist[nx][ny][new_mask] == -1:
+                dist[nx][ny][new_mask] = dist[x][y][mask] + 1
+                parent[(nx, ny, new_mask)] = (x, y, mask, act)
+                q.append((nx, ny, new_mask))
+
+        # Подобрать ключ на текущей клетке
+        cell = lab[x][y]
+        if cell.islower():
+            idx = key_to_idx.get(cell)
+            if idx is not None and not (mask & (1 << idx)):
+                new_mask = mask | (1 << idx)
+                if dist[x][y][new_mask] == -1:
+                    dist[x][y][new_mask] = dist[x][y][mask] + 1
+                    parent[(x, y, new_mask)] = (x, y, mask, 'P')
+                    q.append((x, y, new_mask))
+
+    # Выход не найден
+    print(-1)
+
+
+if __name__ == '__main__':
+    solve()
