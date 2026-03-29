@@ -1,0 +1,30 @@
+d = int(input())
+
+# Определим максимальный id сотрудника
+max_id = 0
+departments = []
+
+for _ in range(d):
+    parts = list(map(int, input().split()))
+    k = parts[0]
+    boss = parts[1]
+    subordinates = parts[2:]
+    departments.append((boss, subordinates))
+    max_id = max(max_id, boss, max(subordinates))
+
+n = max_id  # количество сотрудников
+
+# Матрица смежности
+adj = [[0] * n for _ in range(n)]
+
+# Для каждого отдела: начальник -> подчинённый
+for boss, subordinates in departments:
+    for sub in subordinates:
+        u = boss - 1
+        v = sub - 1
+        adj[u][v] = 1
+        adj[v][u] = -1
+
+# Вывод
+for i in range(n):
+    print(' '.join(map(str, adj[i])))
