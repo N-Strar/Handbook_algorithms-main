@@ -1,0 +1,22 @@
+n = int(input())
+a = list(map(int, input().split()))  # a_n, a_{n-1}, ..., a_0
+
+m = int(input())
+b = list(map(int, input().split()))  # b_m, b_{m-1}, ..., b_0
+
+# Дополняем нулями слева (в начале) до одинаковой длины
+max_len = max(n, m) + 1
+a = [0] * (max_len - len(a)) + a
+b = [0] * (max_len - len(b)) + b
+
+# Суммируем коэффициенты
+c = [a[i] + b[i] for i in range(max_len)]
+
+# Находим степень (первый ненулевой коэффициент с начала)
+k = 0
+while k < max_len - 1 and c[k] == 0:
+    k += 1
+
+# Выводим результат
+print(max_len - 1 - k)
+print(' '.join(map(str, c[k:])))
