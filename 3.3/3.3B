@@ -1,0 +1,10 @@
+n = int(input())
+
+if n <= 6:
+    print("No")
+else:
+    print("Yes")
+    max_val = 200000
+    min_val = 0
+    result = [max_val, min_val] + [max_val] * (n - 2)
+    print(' '.join(map(str, result[:n])))
