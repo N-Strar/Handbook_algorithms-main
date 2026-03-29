@@ -1,0 +1,39 @@
+import sys
+
+def solve_simple():
+    data = sys.stdin.read().strip().split()
+    if not data:
+        return
+    
+    q = int(data[0])
+    idx = 1
+    arr = []
+    results = []
+    
+    for _ in range(q):
+        op = int(data[idx]); idx += 1
+        
+        if op == 1:
+            x = int(data[idx]); idx += 1
+            y = int(data[idx]); idx += 1
+            # Вставляем y после позиции x
+            if x == 0:
+                arr.insert(0, y)
+            else:
+                arr.insert(x, y)  # insert вставляет перед индексом x
+                # Но нам нужно после x-го элемента
+                # В arr индексация с 0: элемент на позиции 1 в arr[0]
+                # Поэтому вставляем на позицию x (после x элементов)
+        
+        elif op == 2:
+            x = int(data[idx]); idx += 1
+            results.append(str(arr[x - 1]))  # позиция x -> индекс x-1
+        
+        elif op == 3:
+            x = int(data[idx]); idx += 1
+            arr.pop(x - 1)
+    
+    sys.stdout.write("\n".join(results))
+
+if name == "main":
+    solve_simple()

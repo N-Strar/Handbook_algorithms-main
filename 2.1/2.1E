@@ -1,0 +1,29 @@
+import sys
+
+def solve():
+    data = sys.stdin.read().strip().split()
+    if not data:
+        return
+    
+    n = int(data[0])
+    a = list(map(int, data[1:1 + n]))
+    
+    # Отмечаем позиции локальных минимумов
+    is_local_min = [False] * n
+    
+    for i in range(1, n - 1):
+        if a[i - 1] > a[i] < a[i + 1]:
+            is_local_min[i] = True
+    
+    # Формируем результат
+    result = []
+    for i in range(n):
+        if not is_local_min[i]:
+            result.append(str(a[i]))
+    
+    # Вывод
+    print(len(result))
+    print(" ".join(result))
+
+if __name__ == "__main__":
+    solve()

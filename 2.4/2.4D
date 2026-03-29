@@ -1,0 +1,30 @@
+import sys
+
+def solve():
+    data = sys.stdin.buffer.read().split()
+    if not data:
+        return
+    
+    n = int(data[0])
+    s = data[1].decode()
+    
+    left = 0
+    right = n - 1
+    result = []
+    
+    while left <= right:
+        if s[left] < s[right]:
+            result.append(s[left])
+            left += 1
+        elif s[left] > s[right]:
+            result.append(s[right])
+            right -= 1
+        else:  # s[left] == s[right]
+            # Всегда берем левый
+            result.append(s[left])
+            left += 1
+    
+    sys.stdout.write("".join(result))
+
+if __name__ == "__main__":
+    solve()

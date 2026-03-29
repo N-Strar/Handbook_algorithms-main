@@ -1,0 +1,22 @@
+import sys
+
+def solve():
+    data = sys.stdin.read().strip().split()
+    if not data:
+        return
+    
+    n = int(data[0])
+    a = list(map(int, data[1:1 + n]))
+    
+    b = []
+    current_min = a[0]
+    
+    for i in range(n):
+        if a[i] < current_min:
+            current_min = a[i]
+        b.append(str(current_min))
+    
+    sys.stdout.write(" ".join(b))
+
+if __name__ == "__main__":
+    solve()

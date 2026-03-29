@@ -1,0 +1,76 @@
+import sys
+
+def solve():
+    data = sys.stdin.read().strip().split()
+    if not data:
+        return
+    
+    n = int(data[0])
+    a = list(map(int, data[1:1+n]))
+    
+    # ========== 1. Минимальная разность ==========
+    # Нужно найти минимальное a[i] - a[j] при i < j
+    # Это достигается, когда a[i] минимален, а a[j] максимален
+    # Но важно: i должно быть строго меньше j
+    
+    # Проходим слева направо, отслеживаем минимальный a[i] слева
+    # и для каждого j вычисляем min_слева - a[j]
+    min_diff = 10**18
+    min_i = min_j = -1
+    min_so_far = a[0]
+    min_so_far_idx = 0
+    
+    for j in range(1, n):
+        current_diff = min_so_far - a[j]
+        if current_diff < min_diff:
+            min_diff = current_diff
+            min_i = min_so_far_idx
+            min_j = j
+        elif current_diff == min_diff:
+            # Если разность одинаковая, выбираем пару с меньшим i
+            if min_so_far_idx < min_i:
+                min_i = min_so_far_idx
+                min_j = j
+            elif min_so_far_idx == min_i and j < min_j:
+                min_j = j
+        
+        # Обновляем минимум слева
+        if a[j] < min_so_far:
+            min_so_far = a[j]
+            min_so_far_idx = j
+    
+    # ========== 2. Максимальная разность ==========
+    # Нужно найти максимальное a[i] - a[j] при i < j
+    # Это достигается, когда a[i] максимален, а a[j] минимален
+    # i должно быть строго меньше j
+    
+    max_diff = -10**18
+    max_i = max_j = -1
+    max_so_far = a[0]
+    max_so_far_idx = 0
+    
+    for j in range(1, n):
+        current_diff = max_so_far - a[j]
+        if current_diff > max_diff:
+            max_diff = current_diff
+            max_i = max_so_far_idx
+            max_j = j
+        elif current_diff == max_diff:
+            # Если разность одинаковая, выбираем пару с меньшим i
+            if max_so_far_idx < max_i:
+                max_i = max_so_far_idx
+                max_j = j
+            elif max_so_far_idx == max_i and j < max_j:
+                max_j = j
+        
+        # Обновляем максимум слева
+        if a[j] > max_so_far:
+            max_so_far = a[j]
+            max_so_far_idx = j
+    
+    # Вывод (индексы с 1)
+    print(min_i + 1, min_j + 1)
+    print(max_i + 1, max_j + 1)
+
+if name == "main":
+    solve()

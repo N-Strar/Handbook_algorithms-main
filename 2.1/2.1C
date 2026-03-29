@@ -1,0 +1,31 @@
+import sys
+
+def solve():
+    data = sys.stdin.read().strip().split()
+    if not data:
+        return
+    
+    idx = 0
+    n = int(data[idx]); idx += 1
+    q = int(data[idx]); idx += 1
+    
+    # Читаем массив a
+    a = list(map(int, data[idx:idx+n])); idx += n
+    
+    # Запоминаем индекс первого вхождения каждого числа
+    # Индексация с 1 (как требуется в выводе)
+    first_occurrence = {}
+    for i, val in enumerate(a):
+        if val not in first_occurrence:
+            first_occurrence[val] = i + 1  # +1 для перехода к 1-индексации
+    
+    # Обрабатываем запросы
+    results = []
+    for _ in range(q):
+        x = int(data[idx]); idx += 1
+        results.append(str(first_occurrence.get(x, -1)))
+    
+    sys.stdout.write("\n".join(results))
+
+if name == "main":
+    solve()

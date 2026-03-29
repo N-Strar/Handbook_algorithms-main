@@ -1,0 +1,111 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <map>
+using namespace std;
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    
+    int n;
+    cin >> n;
+    
+    // Для n <= 64 используем битовые маски (самое эффективное)
+    if (n <= 64) {
+        map<int, long long> value_mask;
+        long long full_mask = (1LL << n) - 1;
+        
+        for (int i = 0; i < n; i++) {
+            int k;
+            cin >> k;
+            for (int j = 0; j < k; j++) {
+                int x;
+                cin >> x;
+                value_mask[x] |= (1LL << i);
+            }
+        }
+        
+        vector<int> core;
+        vector<int> petal_counts(n, 0);
+        
+        for (const auto& [val, mask] : value_mask) {
+            if (mask == full_mask) {
+                core.push_back(val);
+            } else if ((mask & (mask - 1)) == 0) {
+                int idx = __builtin_ctzll(mask);
+                petal_counts[idx]++;
+            } else {
+                cout << "NO\n";
+                return 0;
+            }
+        }
+        
+        cout << "YES\n";
+        cout << core.size() << "\n";
+        for (int i = 0; i < n; i++) {
+            if (i > 0) cout << " ";
+            cout << petal_counts[i];
+        }
+        cout << "\n";
+    } 
+    else {
+        // Для больших n используем сортировку без хранения всех пар
+        // Сначала читаем все данные в один вектор и сортируем
+        vector<pair<int, int>> data;
+        
+        long long total_elements = 0;
+        for (int i = 0; i < n; i++) {
+            int k;
+            cin >> k;
+            total_elements += k;
+            for (int j = 0; j < k; j++) {
+                int x;
+                cin >> x;
+                data.emplace_back(x, i);
+            }
+        }
+        
+        // Если данных слишком много, возможно, нужно использовать другую стратегию
+        sort(data.begin(), data.end());
+        
+        vector<int> core;
+        vector<int> petal_counts(n, 0);
+        
+        for (size_t i = 0; i < data.size(); ) {
+            int val = data[i].first;
+            int last_set = -1;
+            int set_count = 0;
+            
+            size_t j = i;
+            while (j < data.size() && data[j].first == val) {
+                if (data[j].second != last_set) {
+                    set_count++;
+                    last_set = data[j].second;
+                }
+                j++;
+            }
+            
+            if (set_count == n) {
+                core.push_back(val);
+            } else if (set_count == 1) {
+                petal_counts[last_set]++;
+            } else {
+                cout << "NO\n";
+                return 0;
+            }
+            
+            i = j;
+        }
+        
+        cout << "YES\n";
+        cout << core.size() << "\n";
+        for (int i = 0; i < n; i++) {
+            if (i > 0) cout << " ";
+            cout << petal_counts[i];
+        }
+        cout << "\n";
+    }
+    
+    return 0;
+}

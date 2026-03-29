@@ -1,0 +1,33 @@
+import sys
+import heapq
+
+def solve():
+    data = sys.stdin.buffer
+    n, m = map(int, data.readline().split())
+    
+    heap = []
+    period = [0] * n
+    id_val = [0] * n
+    
+    for i in range(n):
+        line = data.readline()
+        while line and line.strip() == b'':
+            line = data.readline()
+        if not line:
+            break
+        iid, p, s = map(int, line.split())
+        id_val[i] = iid
+        period[i] = p
+        heapq.heappush(heap, (s, i))  # (время, индекс)
+    
+    results = []
+    
+    for _ in range(m):
+        time, idx = heapq.heappop(heap)
+        results.append(str(id_val[idx]))
+        heapq.heappush(heap, (time + period[idx], idx))
+    
+    sys.stdout.write("\n".join(results))
+
+if __name__ == "__main__":
+    solve()

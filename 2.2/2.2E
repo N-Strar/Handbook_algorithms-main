@@ -1,0 +1,41 @@
+import sys
+
+def solve():
+    data = sys.stdin.buffer.read().split()
+    if not data:
+        return
+    
+    n = int(data[0])
+    a = list(map(int, data[1:1 + n]))
+    
+    # Храним все уникальные OR
+    all_or = set()
+    
+    # Храним OR для подмассивов, заканчивающихся на текущей позиции
+    # Используем список для экономии памяти
+    current = []
+    
+    for x in a:
+        # Новый список для текущей позиции
+        new_current = [x]
+        
+        # Комбинируем с предыдущими
+        for val in current:
+            new_val = val | x
+            if new_val != new_current[-1]:  # Избегаем дубликатов подряд
+                new_current.append(new_val)
+        
+        # Удаляем дубликаты (если они есть)
+        # В данном случае new_current уже содержит уникальные значения
+        # благодаря проверке выше
+        
+        # Добавляем в общее множество
+        all_or.update(new_current)
+        
+        # Обновляем для следующей итерации
+        current = new_current
+    
+    print(len(all_or))
+
+if __name__ == "__main__":
+    solve()

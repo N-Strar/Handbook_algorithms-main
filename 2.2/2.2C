@@ -1,0 +1,38 @@
+import sys
+
+def solve():
+    # Читаем количество множеств
+    n = int(sys.stdin.readline())
+    
+    # Инициализируем пересечение None (будет первым множеством)
+    intersection = None
+    
+    for i in range(n):
+        # Читаем строку с множеством
+        line = sys.stdin.readline()
+        while line and line.strip() == '':
+            line = sys.stdin.readline()
+        
+        if not line:
+            break
+        
+        parts = list(map(int, line.split()))
+        k = parts[0]
+        current_set = set(parts[1:1 + k])
+        
+        if i == 0:
+            intersection = current_set
+        else:
+            intersection &= current_set
+        
+        # Если пересечение стало пустым, дальше можно не проверять
+        if len(intersection) == 0:
+            # Пропускаем оставшиеся строки
+            for _ in range(i + 1, n):
+                sys.stdin.readline()
+            break
+    
+    print(len(intersection) if intersection else 0)
+
+if __name__ == "__main__":
+    solve()

@@ -1,0 +1,30 @@
+import sys
+
+def solve():
+    data = sys.stdin.buffer
+    n = int(data.readline())
+    
+    tickets = []
+    
+    for _ in range(n):
+        line = data.readline()
+        while line and line.strip() == b'':
+            line = data.readline()
+        d, w = map(int, line.split())
+        tickets.append((w, d))
+    
+    tickets.sort(key=lambda x: (-x[0], x[1]))
+    
+    time1 = 0
+    time2 = 0
+    
+    for w, d in tickets:
+        if time1 <= time2:
+            time1 += d
+        else:
+            time2 += d
+    
+    print(max(time1, time2))
+
+if __name__ == "__main__":
+    solve()

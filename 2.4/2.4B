@@ -1,0 +1,58 @@
+import sys
+from collections import deque
+
+def solve():
+    data = sys.stdin.buffer.read().split()
+    if not data:
+        return
+    
+    q = int(data[0])
+    idx = 1
+    
+    deck = deque()
+    results = []
+    
+    for _ in range(q):
+        op = int(data[idx]); idx += 1
+        
+        if op == 1:
+            x = int(data[idx]); idx += 1
+            deck.appendleft(x)
+            # Выводим первый и последний элементы
+            if deck:
+                results.append(f"{deck[0]} {deck[-1]}")
+            else:
+                results.append("-1")
+        
+        elif op == 2:
+            x = int(data[idx]); idx += 1
+            deck.append(x)
+            if deck:
+                results.append(f"{deck[0]} {deck[-1]}")
+            else:
+                results.append("-1")
+        
+        elif op == 3:
+            if deck:
+                deck.popleft()
+                if deck:
+                    results.append(f"{deck[0]} {deck[-1]}")
+                else:
+                    results.append("-1")
+            else:
+                results.append("-1")
+        
+        else:  # op == 4
+            if deck:
+                deck.pop()
+                if deck:
+                    results.append(f"{deck[0]} {deck[-1]}")
+                else:
+                    results.append("-1")
+            else:
+                results.append("-1")
+    
+    sys.stdout.write("\n".join(results))
+
+if __name__ == "__main__":
+    solve()

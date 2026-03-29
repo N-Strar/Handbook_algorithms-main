@@ -1,0 +1,21 @@
+import sys
+
+def solve():
+    s = sys.stdin.readline().strip()
+    
+    stack = []
+    pairs = {')': '(', ']': '[', '}': '{'}
+    
+    for ch in s:
+        if ch in '([{':
+            stack.append(ch)
+        else:  # закрывающая скобка
+            if not stack or stack[-1] != pairs[ch]:
+                print("NO")
+                return
+            stack.pop()
+    
+    print("YES" if not stack else "NO")
+
+if __name__ == "__main__":
+    solve()

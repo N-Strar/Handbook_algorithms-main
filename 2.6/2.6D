@@ -1,0 +1,33 @@
+import sys
+import heapq
+
+def solve():
+    data = sys.stdin.buffer.read().split()
+    if not data:
+        return
+    
+    n = int(data[0])
+    k = int(data[1])
+    
+    heap = []  # хранит времена освобождения мест
+    count = 0
+    idx = 2
+    
+    for _ in range(n):
+        a = int(data[idx]); idx += 1
+        b = int(data[idx]); idx += 1
+        
+        # Удаляем все места, которые освободились до a
+        while heap and heap[0] <= a:
+            heapq.heappop(heap)
+        
+        # Если есть свободное место
+        if len(heap) < k:
+            heapq.heappush(heap, b)
+            count += 1
+        # Иначе машина уезжает
+    
+    print(count)
+
+if __name__ == "__main__":
+    solve()

@@ -1,0 +1,26 @@
+import sys
+from collections import Counter
+
+def solve():
+    data = sys.stdin.buffer.read().split()
+    if not data:
+        return
+    
+    n = int(data[0])
+    a = list(map(int, data[1:1 + n]))
+    
+    # Подсчитываем частоту каждого числа
+    freq = Counter(a)
+    
+    # Получаем список уникальных чисел и сортируем по убыванию частоты
+    # Если частоты одинаковые, сортируем по значению (для выбора наименьшей суммы)
+    unique_numbers = list(freq.keys())
+    unique_numbers.sort(key=lambda x: (-freq[x], x))
+    
+    # Берем три самых частых числа
+    result = sorted(unique_numbers[:3])
+    
+    print(result[0], result[1], result[2])
+
+if __name__ == "__main__":
+    solve()

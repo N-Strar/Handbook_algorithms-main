@@ -1,0 +1,42 @@
+import sys
+from math import gcd
+from collections import defaultdict
+
+def solve():
+    data = sys.stdin.buffer.read().split()
+    if not data:
+        return
+    
+    n = int(data[0])
+    
+    # Словарь для подсчета частот
+    freq = defaultdict(int)
+    
+    idx = 1
+    for _ in range(n):
+        num = int(data[idx]); idx += 1
+        den = int(data[idx]); idx += 1
+        
+        # Сокращаем дробь
+        g = gcd(num, den)
+        num //= g
+        den //= g
+        
+        # Используем кортеж (числитель, знаменатель) как ключ
+        freq[(num, den)] += 1
+    
+    # Находим дробь с максимальной частотой
+    max_count = 0
+    result_num, result_den = 0, 1
+    
+    for (num, den), count in freq.items():
+        # Сравниваем дроби: num/den < result_num/result_den
+        # num * result_den < result_num * den
+        if count > max_count or (count == max_count and num * result_den < result_num * den):
+            max_count = count
+            result_num, result_den = num, den
+    
+    print(result_num, result_den)
+
+if __name__ == "__main__":
+    solve()

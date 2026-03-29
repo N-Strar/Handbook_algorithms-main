@@ -1,0 +1,36 @@
+import sys
+import heapq
+
+def solve():
+    data = sys.stdin.buffer.read().split()
+    if not data:
+        return
+    
+    n = int(data[0])
+    k = int(data[1])
+    
+    # Куча: (время_готовности, индекс_сервера)
+    heap = [(0, i) for i in range(k)]
+    heapq.heapify(heap)
+    
+    results = []
+    pos = 2
+    
+    for _ in range(n):
+        t = int(data[pos]); pos += 1
+        d = int(data[pos]); pos += 1
+        
+        ready_time, server_idx = heapq.heappop(heap)
+        
+        start_time = max(t, ready_time)
+        finish_time = start_time + d
+        
+        results.append(str(finish_time))
+        
+        heapq.heappush(heap, (finish_time, server_idx))
+    
+    # Выводим в одну строку через пробел
+    sys.stdout.write(" ".join(results))
+
+if __name__ == "__main__":
+    solve()

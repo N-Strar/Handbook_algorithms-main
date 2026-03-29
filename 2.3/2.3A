@@ -1,0 +1,32 @@
+import sys
+
+def solve():
+    data = sys.stdin.buffer.read().split()
+    if not data:
+        return
+    
+    q = int(data[0])
+    idx = 1
+    
+    # Словарь для хранения соответствий
+    # По умолчанию -1, поэтому можно не хранить значения по умолчанию
+    dictionary = {}
+    results = []
+    
+    for _ in range(q):
+        op = int(data[idx]); idx += 1
+        
+        if op == 1:
+            x = int(data[idx]); idx += 1
+            y = int(data[idx]); idx += 1
+            dictionary[x] = y
+        
+        else:  # op == 2
+            x = int(data[idx]); idx += 1
+            # Если ключа нет в словаре, возвращаем -1
+            results.append(str(dictionary.get(x, -1)))
+    
+    sys.stdout.write("\n".join(results))
+
+if __name__ == "__main__":
+    solve()

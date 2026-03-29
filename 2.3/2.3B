@@ -1,0 +1,28 @@
+import sys
+from collections import Counter
+
+def solve():
+    data = sys.stdin.buffer.read().split()
+    if not data:
+        return
+    
+    n = int(data[0])
+    a = list(map(int, data[1:1 + n]))
+    
+    # Подсчитываем частоту каждого числа
+    freq = Counter(a)
+    
+    # Находим число с максимальной частотой
+    # Если частоты равны, выбираем наименьшее число
+    max_count = -1
+    result = None
+    
+    for num, count in freq.items():
+        if count > max_count or (count == max_count and num < result):
+            max_count = count
+            result = num
+    
+    print(result)
+
+if __name__ == "__main__":
+    solve()

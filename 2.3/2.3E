@@ -1,0 +1,46 @@
+import sys
+from collections import defaultdict
+
+def solve():
+    data = sys.stdin.buffer.read().split()
+    if not data:
+        return
+    
+    n = int(data[0])
+    words = [w.decode() for w in data[1:1 + n]]
+    
+    if n < 2:
+        print(0)
+        return
+    
+    # Считаем частоту каждого слова
+    word_count = defaultdict(int)
+    for word in words:
+        word_count[word] += 1
+    
+    # Считаем количество пар одинаковых слов
+    # Они НЕ должны учитываться, так как отличаются в 0 позиций
+    # Но они могут быть частью интересных пар с другими словами
+    
+    # Используем шаблоны, но вычитаем пары одинаковых слов
+    variations = defaultdict(int)
+    result = 0
+    
+    for word in words:
+        for i in range(len(word)):
+            pattern = word[:i] + '*' + word[i+1:]
+            # Сколько раз этот шаблон встречался раньше
+            result += variations[pattern]
+            variations[pattern] += 1
+    
+    # Вычитаем пары одинаковых слов
+    for word, count in word_count.items():
+        if count > 1:
+            # Каждая пара одинаковых слов была посчитана L раз
+            # (по одному разу для каждой позиции)
+            result -= count * (count - 1) // 2 * len(word)
+    
+    print(result)
+
+if __name__ == "__main__":
+    solve()

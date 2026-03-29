@@ -1,0 +1,76 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    
+    int n;
+    cin >> n;
+    
+    vector<long long> a(n);
+    for (int i = 0; i < n; i++) {
+        cin >> a[i];
+    }
+    
+    if (n == 2) {
+        cout << a[0] << " " << a[1] << endl;
+        return 0;
+    }
+    
+    vector<int> next_idx(n);
+    vector<int> prev_idx(n);
+    vector<bool> alive(n, true);
+    
+    for (int i = 0; i < n; i++) {
+        next_idx[i] = (i + 1) % n;
+        prev_idx[i] = (i - 1 + n) % n;
+    }
+    
+    int current = 0;
+    int remaining = n;
+    
+    while (remaining > 3) {
+        int left = prev_idx[current];
+        int right = next_idx[current];
+        
+        int min_node = left;
+        if (a[current] < a[min_node]) min_node = current;
+        if (a[right] < a[min_node]) min_node = right;
+        
+        int max_node = left;
+        if (a[current] > a[max_node]) max_node = current;
+        if (a[right] > a[max_node]) max_node = right;
+        
+        alive[min_node] = false;
+        
+        int prev_min = prev_idx[min_node];
+        int next_min = next_idx[min_node];
+        next_idx[prev_min] = next_min;
+        prev_idx[next_min] = prev_min;
+        
+        remaining--;
+        current = max_node;
+    }
+    
+    // Осталось 3 игрока
+    int right = next_idx[current];
+    int left = prev_idx[current];
+    
+    // Находим минимального
+    long long min_val = min({a[current], a[right], a[left]});
+    
+    if (a[current] == min_val) {
+        // Текущий удаляется, выводим правого и левого (right left)
+        cout << a[right] << " " << a[left] << endl;
+    } else if (a[left] == min_val) {
+        // Левый удаляется, выводим текущего и правого
+        cout << a[current] << " " << a[right] << endl;
+    } else {
+        // Правый удаляется, выводим текущего и левого
+        cout << a[current] << " " << a[left] << endl;
+    }
+    
+    return 0;
+}

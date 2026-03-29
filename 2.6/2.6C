@@ -1,0 +1,26 @@
+import sys
+
+def solve():
+    data = sys.stdin.buffer.read().split()
+    if not data:
+        return
+    
+    n = int(data[0])
+    k = int(data[1])
+    a = list(map(int, data[2:2 + n]))
+    
+    # Сортируем по убыванию
+    a.sort(reverse=True)
+    
+    # Берём первые k элементов, но только положительные
+    total = 0
+    for i in range(min(k, n)):
+        if a[i] > 0:
+            total += a[i]
+        else:
+            break
+    
+    print(total)
+
+if __name__ == "__main__":
+    solve()

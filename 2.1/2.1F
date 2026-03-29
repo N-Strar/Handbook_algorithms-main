@@ -1,0 +1,29 @@
+import sys
+
+def solve():
+    data = sys.stdin.read().strip().split()
+    if not data:
+        return
+    
+    n = int(data[0])
+    a = list(map(int, data[1:1 + n]))
+    
+    # Находим максимальный элемент
+    max_val = max(a)
+    
+    # Находим самую правую позицию с максимальным элементом
+    # Идем справа налево, чтобы найти последнее вхождение
+    rightmost_index = -1
+    for i in range(n - 1, -1, -1):
+        if a[i] == max_val:
+            rightmost_index = i
+            break
+    
+    # Формируем результат, пропуская найденный индекс
+    result = [str(a[i]) for i in range(n) if i != rightmost_index]
+    
+    # Вывод
+    print(" ".join(result))
+
+if __name__ == "__main__":
+    solve()
