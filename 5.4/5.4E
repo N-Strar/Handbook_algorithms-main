@@ -1,0 +1,101 @@
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+vector<int> parent;
+
+int find(int v) {
+    while (parent[v] != v) {
+        parent[v] = parent[parent[v]];
+        v = parent[v];
+    }
+    return v;
+}
+
+void unite(int a, int b) {
+    a = find(a);
+    b = find(b);
+    if (a != b) parent[b] = a;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int n, m;
+    cin >> n >> m;
+    vector<string> grid(n);
+    for (int i = 0; i < n; i++) cin >> grid[i];
+
+    parent.resize(n * m);
+    for (int i = 0; i < n * m; i++) parent[i] = i;
+
+    auto idx = [&](int i, int j) { return i * m + j; };
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if (grid[i][j] == '.') continue;
+            for (int di = -1; di <= 1; di++) {
+                for (int dj = -1; dj <= 1; dj++) {
+                    if (di == 0 && dj == 0) continue;
+                    int ni = i + di, nj = j + dj;
+                    if (ni >= 0 && ni < n && nj >= 0 && nj < m && grid[ni][nj] != '.') {
+                        unite(idx(i, j), idx(ni, nj));
+                    }
+                }
+            }
+        }
+    }
+
+    vector<bool> has_city(n * m, false), has_portal(n * m, false);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if (grid[i][j] == '.') continue;
+            int root = find(idx(i, j));
+            if (grid[i][j] == 'X') has_city[root] = true;
+            if (grid[i][j] == '@') has_portal[root] = true;
+        }
+    }
+
+    vector<pair<bool, bool>> comps;
+    for (int i = 0; i < n * m; i++) {
+        if (has_city[i] || has_portal[i]) {
+            comps.emplace_back(has_city[i], has_portal[i]);
+        }
+    }
+
+    // Объединяем компоненты с порталами
+    vector<int> portal_comps;
+    for (int i = 0; i < (int)comps.size(); i++) {
+        if (comps[i].second) portal_comps.push_back(i);
+    }
+    if (!portal_comps.empty()) {
+        bool new_has_city = false;
+        for (int i : portal_comps) new_has_city |= comps[i].first;
+        vector<pair<bool, bool>> new_comps;
+        for (int i = 0; i < (int)comps.size(); i++) {
+            bool in = false;
+            for (int j : portal_comps) if (i == j) in = true;
+            if (!in) new_comps.push_back(comps[i]);
+        }
+        new_comps.emplace_back(new_has_city, true);
+        comps = new_comps;
+    }
+
+    int city_comp_count = 0;
+    for (auto [hc, _] : comps) if (hc) city_comp_count++;
+
+    if (city_comp_count == 1) {
+        cout << "YES\n";
+    } else {
+        bool has_portal_any = false;
+        for (auto [_, hp] : comps) if (hp) has_portal_any = true;
+        if (has_portal_any) {
+            cout << "NO " << city_comp_count - 1 << "\n";
+        } else {
+            cout << "NO " << city_comp_count << "\n";
+        }
+    }
+
+    return 0;
+}
