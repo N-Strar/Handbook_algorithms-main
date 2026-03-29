@@ -1,0 +1,16 @@
+import math
+
+# Чтение входных данных
+a, b = map(int, input().split())
+c, d = map(int, input().split())
+
+# Сумма дробей: a/b + c/d = (a*d + c*b) / (b*d)
+numerator = a * d + c * b
+denominator = b * d
+
+# Сокращение дроби
+g = math.gcd(numerator, denominator)
+numerator //= g
+denominator //= g
+
+print(numerator, denominator)
