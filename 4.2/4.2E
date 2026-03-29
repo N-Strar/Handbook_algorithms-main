@@ -1,0 +1,16 @@
+import math
+
+a, b, c = map(int, input().split())
+
+# Находим НОД, учитывая знаки
+g = math.gcd(abs(a), abs(b))
+
+# Особые случаи
+if a == 0 and b == 0:
+    print("YES" if c == 0 else "NO")
+elif a == 0:
+    print("YES" if c % b == 0 else "NO")
+elif b == 0:
+    print("YES" if c % a == 0 else "NO")
+else:
+    print("YES" if c % g == 0 else "NO")
