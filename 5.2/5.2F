@@ -1,0 +1,88 @@
+from itertools import permutations, product
+
+def solve():
+    import sys
+    input = sys.stdin.readline
+    t = int(input())
+    for _ in range(t):
+        n, m, k, s = map(int, input().split())
+        grid = [input().strip() for _ in range(n)]
+
+        # Для каждого приложения собираем клетки, где оно видно
+        cells = [[] for _ in range(k + 1)]
+        for i in range(n):
+            for j in range(m):
+                if grid[i][j] != '.':
+                    d = int(grid[i][j])
+                    cells[d].append((i, j))
+
+        # Находим возможные позиции для каждого окна
+        positions = [[] for _ in range(k + 1)]
+        for d in range(1, k + 1):
+            # Минимальные и максимальные координаты клеток d
+            min_r = min(r for r, _ in cells[d])
+            max_r = max(r for r, _ in cells[d])
+            min_c = min(c for _, c in cells[d])
+            max_c = max(c for _, c in cells[d])
+            for x in range(n - s + 1):
+                for y in range(m - s + 1):
+                    if x <= min_r and max_r < x + s and y <= min_c and max_c < y + s:
+                        # Проверяем, что все клетки d попадают в квадрат
+                        if all(x <= r < x + s and y <= c < y + s for r, c in cells[d]):
+                            positions[d].append((x, y))
+
+        total = 0
+        # Перебираем порядок открытия
+        for perm in permutations(range(1, k + 1)):
+            # perm[0] — самое нижнее, perm[-1] — самое верхнее
+            # Перебираем все комбинации позиций
+            # Используем рекурсию
+            chosen = [None] * (k + 1)
+
+            def dfs(idx):
+                if idx == k:
+                    # Проверяем видимость
+                    ok = True
+                    for i in range(n):
+                        for j in range(m):
+                            if grid[i][j] == '.':
+                                # Клетка не должна быть покрыта ни одним окном
+                                for app in range(1, k + 1):
+                                    x, y = chosen[app]
+                                    if x <= i < x + s and y <= j < y + s:
+                                        ok = False
+                                        break
+                                if not ok:
+                                    break
+                            else:
+                                d = int(grid[i][j])
+                                x, y = chosen[d]
+                                if not (x <= i < x + s and y <= j < y + s):
+                                    ok = False
+                                    break
+                                # Проверяем, что нет более высокого окна
+                                for app in perm[perm.index(d) + 1:]:
+                                    xa, ya = chosen[app]
+                                    if xa <= i < xa + s and ya <= j < ya + s:
+                                        ok = False
+                                        break
+                                if not ok:
+                                    break
+                        if not ok:
+                            break
+                    if ok:
+                        nonlocal total
+                        total += 1
+                    return
+                app = perm[idx]
+                for pos in positions[app]:
+                    chosen[app] = pos
+                    dfs(idx + 1)
+                    chosen[app] = None
+
+            dfs(0)
+
+        print(total)
+
+if __name__ == "__main__":
+    solve()
