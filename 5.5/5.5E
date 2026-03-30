@@ -1,0 +1,84 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <unordered_map>
+#include <algorithm>
+#include <tuple>
+using namespace std;
+
+const int INF = 1e9;
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n, m, K;
+    cin >> n >> m >> K;
+    vector<vector<pair<int, int>>> g(n + 1);
+    for (int i = 0; i < m; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        g[u].emplace_back(v, w);
+        g[v].emplace_back(u, w);
+    }
+    int X, Y;
+    cin >> X >> Y;
+
+    // dist[v] = map{sum -> total_weight}
+    vector<unordered_map<int, int>> dist(n + 1);
+    vector<unordered_map<int, pair<int, int>>> prev(n + 1);
+
+    dist[X][0] = 0;
+    using State = tuple<int, int, int>; // (total_weight, vertex, sum)
+    priority_queue<State, vector<State>, greater<State>> pq;
+    pq.emplace(0, X, 0);
+
+    while (!pq.empty()) {
+        auto [d, v, c] = pq.top(); pq.pop();
+        if (dist[v].find(c) == dist[v].end() || d != dist[v][c]) continue;
+        for (auto [to, w] : g[v]) {
+            int nc = c + w;
+            if (nc > K) nc = K;
+            int nd = d + w;
+            if (dist[to].find(nc) == dist[to].end() || nd < dist[to][nc]) {
+                dist[to][nc] = nd;
+                prev[to][nc] = {v, c};
+                pq.emplace(nd, to, nc);
+            }
+        }
+    }
+
+    int best_c = -1;
+    int best_d = INF;
+    for (auto& [c, d] : dist[Y]) {
+        if (c >= K && d < best_d) {
+            best_d = d;
+            best_c = c;
+        }
+    }
+
+    if (best_c == -1) {
+        cout << -1 << endl;
+        return 0;
+    }
+
+    vector<int> path;
+    int v = Y, c = best_c;
+    while (!(v == X && c == 0)) {
+        path.push_back(v);
+        auto [pv, pc] = prev[v][c];
+        v = pv;
+        c = pc;
+    }
+    path.push_back(X);
+    reverse(path.begin(), path.end());
+
+    cout << path.size() << endl;
+    for (size_t i = 0; i < path.size(); i++) {
+        if (i) cout << " ";
+        cout << path[i];
+    }
+    cout << endl;
+
+    return 0;
+}
