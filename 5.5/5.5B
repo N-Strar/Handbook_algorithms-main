@@ -1,0 +1,149 @@
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const ll INF = 1e18;
+
+struct State {
+    ll d;
+    int v, h, m;
+    bool operator>(const State& o) const { return d > o.d; }
+};
+
+struct Prev {
+    int v, h, m, act; // act: 0 = move, 1 = take, 2 = leave
+};
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n, m, V, o1, o2, o3;
+    cin >> n >> m >> V >> o1 >> o2 >> o3;
+    vector<int> orders = {o1, o2, o3};
+    vector<int> order_id(n + 1, 0);
+    for (int i = 0; i < 3; ++i) order_id[orders[i]] = i + 1;
+
+    vector<vector<pair<int, int>>> g(n + 1);
+    for (int i = 0; i < m; ++i) {
+        int u, v, c;
+        cin >> u >> v >> c;
+        g[u].emplace_back(v, c);
+        g[v].emplace_back(u, c);
+    }
+
+    int k; cin >> k;
+    vector<bool> is_station(n + 1, false);
+    for (int i = 0; i < k; ++i) { int x; cin >> x; is_station[x] = true; }
+    int l; cin >> l;
+    vector<bool> is_parking(n + 1, false);
+    for (int i = 0; i < l; ++i) { int x; cin >> x; is_parking[x] = true; }
+
+    // dist[v][h][mask]
+    vector<vector<vector<ll>>> dist(n + 1, vector<vector<ll>>(2, vector<ll>(8, INF)));
+    vector<vector<vector<Prev>>> parent(n + 1, vector<vector<Prev>>(2, vector<Prev>(8, {-1, -1, -1, -1})));
+
+    // начальное состояние (V, без самоката, маска 0)
+    dist[V][0][0] = 0;
+    priority_queue<State, vector<State>, greater<State>> pq;
+    pq.push({0, V, 0, 0});
+
+    // если на старте можно взять самокат, добавляем это состояние
+    if (is_station[V]) {
+        dist[V][1][0] = 0;
+        parent[V][1][0] = {V, 0, 0, 1}; // взяли самокат
+        pq.push({0, V, 1, 0});
+    }
+    // если на старте можно оставить самокат (но его нет), не нужно
+
+    while (!pq.empty()) {
+        auto [d, u, h, mask] = pq.top(); pq.pop();
+        if (d != dist[u][h][mask]) continue;
+
+        // 1. Движение по рёбрам
+        for (auto [v, w] : g[u]) {
+            ll nd = d + (h ? (w + 1) / 2 : w);
+            int new_h = h;
+            int new_mask = mask;
+            // если v - непосещённый заказ, аренда обрывается
+            if (order_id[v] && !(mask >> (order_id[v] - 1) & 1)) {
+                new_h = 0;
+                new_mask = mask | (1 << (order_id[v] - 1));
+            }
+            if (nd < dist[v][new_h][new_mask]) {
+                dist[v][new_h][new_mask] = nd;
+                parent[v][new_h][new_mask] = {u, h, mask, 0}; // перемещение
+                pq.push({nd, v, new_h, new_mask});
+            }
+        }
+
+        // 2. Взять самокат на месте (если можно)
+        if (h == 0 && is_station[u]) {
+            if (d < dist[u][1][mask]) {
+                dist[u][1][mask] = d;
+                parent[u][1][mask] = {u, 0, mask, 1}; // взяли
+                pq.push({d, u, 1, mask});
+            }
+        }
+
+        // 3. Оставить самокат на месте (если можно)
+        if (h == 1 && is_parking[u]) {
+            if (d < dist[u][0][mask]) {
+                dist[u][0][mask] = d;
+                parent[u][0][mask] = {u, 1, mask, 2}; // оставили
+                pq.push({d, u, 0, mask});
+            }
+        }
+    }
+
+    // Ищем лучший финал: вернуться в V с маской 7
+    ll best = INF;
+    int best_h = -1;
+    for (int h = 0; h < 2; ++h) {
+        if (dist[V][h][7] < best) {
+            best = dist[V][h][7];
+            best_h = h;
+        }
+    }
+
+    if (best == INF) {
+        cout << -1 << '\n';
+        return 0;
+    }
+
+    // Восстановление пути
+    vector<tuple<int, int, int, int>> actions; // (v, h, mask, act)
+    int v = V, h = best_h, mask = 7;
+    while (v != V || h != 0 || mask != 0) {
+        Prev p = parent[v][h][mask];
+        actions.emplace_back(v, h, mask, p.act);
+        v = p.v; h = p.h; mask = p.m;
+    }
+    reverse(actions.begin(), actions.end());
+
+    // Построение итогового пути и состояний
+    vector<int> path = {V};
+    vector<int> scooter = {0};
+    int cur_h = 0;
+    for (auto [nv, nh, nm, act] : actions) {
+        if (act == 0) { // перемещение
+            path.push_back(nv);
+            scooter.push_back(nh);
+            cur_h = nh;
+        } else if (act == 1) { // взяли самокат
+            scooter.back() = 1;
+            cur_h = 1;
+        } else { // оставили самокат
+            scooter.back() = 0;
+            cur_h = 0;
+        }
+    }
+
+    cout << path.size() << '\n';
+    for (size_t i = 0; i < path.size(); ++i) {
+        cout << path[i] << (i + 1 < path.size() ? " " : "\n");
+    }
+    for (int x : scooter) cout << x;
+    cout << '\n';
+
+    return 0;
+}
