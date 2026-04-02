@@ -25,20 +25,17 @@ def karger(n, edges):
             rank[rx] += 1
         return True
 
-    # Копируем рёбра (не изменяем исходный список)
     e = list(edges)
     vertex_count = n
-    while vertex_count > 2:
+    while vertex_count > 2 and e:
         idx = random.randrange(len(e))
         u, v = e[idx]
         if union(u, v):
             vertex_count -= 1
-        # Удаляем ребро, чтобы не выбирать его снова в этом проходе
-        # (можно удалить, но проще просто игнорировать при find)
+        # Удаляем ребро, чтобы не выбирать его снова
         e.pop(idx)
 
     # Подсчитываем рёбра между двумя компонентами
-    comp = find(0)
     cnt = 0
     for u, v in edges:
         if find(u) != find(v):
@@ -53,6 +50,13 @@ def main():
     n = int(next(it))
     m = int(next(it))
     edges = [(int(next(it)) - 1, int(next(it)) - 1) for _ in range(m)]
+
+    # Если граф изначально несвязный, минимальный разрез = 0
+    # Проверим связность (можно простым BFS, но для ускорения просто запустим Каргера несколько раз)
+    # Но проще: если m < n-1, то граф точно несвязный → ответ 0
+    if m < n - 1:
+        print(0)
+        return
 
     iterations = int(n * n * math.log(n)) + 10
     best = m
