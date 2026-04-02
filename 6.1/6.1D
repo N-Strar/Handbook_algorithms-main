@@ -1,0 +1,25 @@
+import sys
+from itertools import permutations
+
+def solve() -> None:
+    data = sys.stdin.read().strip().split()
+    if not data:
+        return
+    n = int(data[0])
+    m = int(data[1])
+    digits = data[2:2 + n]          # список строк-цифр
+
+    best = None
+    for perm in permutations(digits):
+        s = ''.join(perm)
+        if int(s) % m == 0:
+            if best is None or s < best:
+                best = s
+
+    if best is None:
+        print("No solutions")
+    else:
+        print(best)
+
+if __name__ == "__main__":
+    solve()
