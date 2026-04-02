@@ -1,0 +1,64 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <climits>
+using namespace std;
+
+int stoer_wagner(int n, vector<vector<int>>& w) {
+    vector<int> vertices(n);
+    for (int i = 0; i < n; ++i) vertices[i] = i;
+    int best = INT_MAX;
+    while (vertices.size() > 1) {
+        vector<bool> used(n, false);
+        vector<int> dist(n, 0);
+        int prev = -1;
+        int last = -1;
+        for (int i = 0; i < (int)vertices.size(); ++i) {
+            // выбираем вершину с максимальным dist
+            int sel = -1;
+            for (int v : vertices) {
+                if (!used[v] && (sel == -1 || dist[v] > dist[sel])) {
+                    sel = v;
+                }
+            }
+            if (sel == -1) break;
+            used[sel] = true;
+            if (i == (int)vertices.size() - 1) {
+                last = sel;
+            }
+            if (i == (int)vertices.size() - 2) {
+                prev = sel;
+            }
+            // обновляем расстояния
+            for (int v : vertices) {
+                dist[v] += w[sel][v];
+            }
+        }
+        // вес разреза = dist[last]
+        if (dist[last] < best) best = dist[last];
+        // схлопываем prev и last
+        for (int v : vertices) {
+            w[prev][v] += w[last][v];
+            w[v][prev] += w[v][last];
+        }
+        vertices.erase(find(vertices.begin(), vertices.end(), last));
+    }
+    return best;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> w(n, vector<int>(n, 0));
+    for (int i = 0; i < m; ++i) {
+        int u, v;
+        cin >> u >> v;
+        --u; --v;
+        w[u][v]++;
+        w[v][u]++;
+    }
+    cout << stoer_wagner(n, w) << endl;
+    return 0;
+}
