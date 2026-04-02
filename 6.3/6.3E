@@ -1,0 +1,11 @@
+MOD = 1_000_000_007
+
+def main() -> None:
+    n = int(input())
+    if n == 1:
+        print(3)
+    else:
+        print(9 * pow(2, n - 2, MOD) % MOD)
+
+if __name__ == "__main__":
+    main()
