@@ -1,0 +1,29 @@
+import sys
+
+def main():
+    data = sys.stdin.buffer.read().split()
+    if not data:
+        return
+    it = iter(data)
+    N = int(next(it))
+    M = int(next(it))
+    # битовая маска для каждой комнаты (0..599)
+    masks = [0] * N
+    rejected = 0
+    for _ in range(M):
+        s = int(next(it))
+        d = int(next(it))
+        # маска для интервала [s, s+d)
+        mask = ((1 << d) - 1) << s
+        found = False
+        for i in range(N):
+            if (masks[i] & mask) == 0:
+                masks[i] |= mask
+                found = True
+                break
+        if not found:
+            rejected += 1
+    print(rejected)
+
+if __name__ == "__main__":
+    main()
