@@ -1,0 +1,66 @@
+import sys
+import random
+import math
+
+def karger(n, edges):
+    parent = list(range(n))
+    rank = [0] * n
+
+    def find(x):
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    def union(x, y):
+        rx, ry = find(x), find(y)
+        if rx == ry:
+            return False
+        if rank[rx] < rank[ry]:
+            parent[rx] = ry
+        elif rank[rx] > rank[ry]:
+            parent[ry] = rx
+        else:
+            parent[ry] = rx
+            rank[rx] += 1
+        return True
+
+    # Копируем рёбра (не изменяем исходный список)
+    e = list(edges)
+    vertex_count = n
+    while vertex_count > 2:
+        idx = random.randrange(len(e))
+        u, v = e[idx]
+        if union(u, v):
+            vertex_count -= 1
+        # Удаляем ребро, чтобы не выбирать его снова в этом проходе
+        # (можно удалить, но проще просто игнорировать при find)
+        e.pop(idx)
+
+    # Подсчитываем рёбра между двумя компонентами
+    comp = find(0)
+    cnt = 0
+    for u, v in edges:
+        if find(u) != find(v):
+            cnt += 1
+    return cnt
+
+def main():
+    data = sys.stdin.buffer.read().split()
+    if not data:
+        return
+    it = iter(data)
+    n = int(next(it))
+    m = int(next(it))
+    edges = [(int(next(it)) - 1, int(next(it)) - 1) for _ in range(m)]
+
+    iterations = int(n * n * math.log(n)) + 10
+    best = m
+    for _ in range(iterations):
+        res = karger(n, edges)
+        if res < best:
+            best = res
+    print(best)
+
+if __name__ == "__main__":
+    main()
