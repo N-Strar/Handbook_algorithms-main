@@ -1,1 +1,23 @@
-ASS
+def find_combinations(money, coins, start, current, result):
+    if money == 0:
+        result.append(current[:])
+        return
+    for i in range(start, len(coins)):
+        coin = coins[i]
+        if coin > money:
+            continue
+        current.append(coin)
+        find_combinations(money - coin, coins, i, current, result)
+        current.pop()
+
+def main():
+    money = int(input())
+    coins = [1, 5, 10]
+    result = []
+    find_combinations(money, coins, 0, [], result)
+    print(len(result))
+    for comb in result:
+        print(len(comb), ' '.join(map(str, comb)))
+
+if __name__ == "__main__":
+    main()
