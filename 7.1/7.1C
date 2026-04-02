@@ -1,0 +1,39 @@
+def solve():
+    n = int(input())
+    coins = []
+    for _ in range(n):
+        c, b = map(int, input().split())
+        coins.append((c, b))
+    S = int(input())
+    coins.sort(reverse=True)  # сортируем по убыванию номинала
+
+    INF = 10**18
+    ans = INF
+
+    # Рекурсивный перебор с отсечением
+    def dfs(idx, remaining, count):
+        nonlocal ans
+        if remaining == 0:
+            ans = min(ans, count)
+            return
+        if idx == n:
+            return
+        if count >= ans:
+            return
+        val, limit = coins[idx]
+        if limit == -1:
+            # бесконечные, но ограничиваем сверху
+            max_use = remaining // val
+        else:
+            max_use = min(limit, remaining // val)
+        # перебираем от максимального к минимальному (жадная эвристика)
+        for use in range(max_use, -1, -1):
+            if count + use >= ans:
+                break
+            dfs(idx + 1, remaining - use * val, count + use)
+
+    dfs(0, S, 0)
+    print(ans if ans != INF else -1)
+
+if __name__ == "__main__":
+    solve()
