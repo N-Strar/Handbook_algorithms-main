@@ -1,0 +1,13 @@
+def solve():
+    money = int(input())
+    coins = [50, 20, 10, 5, 1]
+    result = []
+    for coin in coins:
+        while money >= coin:
+            result.append(coin)
+            money -= coin
+    print(len(result))
+    print(' '.join(map(str, result)))
+
+if __name__ == "__main__":
+    solve()
