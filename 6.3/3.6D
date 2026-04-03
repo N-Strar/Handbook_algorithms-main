@@ -1,19 +1,16 @@
-import sys
+def win(a, b):
+    if a == 0 and b == 0:
+        return False
+    # взять один из первого набора
+    if a > 0 and not win(a - 1, b):
+        return True
+    # взять один из второго набора
+    if b > 0 and not win(a, b - 1):
+        return True
+    # взять по одному из обоих
+    if a > 0 and b > 0 and not win(a - 1, b - 1):
+        return True
+    return False
 
-def main() -> None:
-    data = sys.stdin.buffer.read().split()
-    if not data:
-        return
-    it = iter(data)
-    n = int(next(it))
-    k = int(next(it))
-    coords = [int(next(it)) for _ in range(n)]
-    coords.sort()
-    ans = k                     # самый левый – только к потолку
-    for i in range(1, n):
-        dist = coords[i] - coords[i - 1]
-        ans += min(k, dist * dist)
-    print(ans)
-
-if __name__ == "__main__":
-    main()
+n, m = map(int, input().split())
+print("Win" if win(n, m) else "Lose")
