@@ -1,31 +1,27 @@
-import sys
+MOD = 1_000_000_007
 
-def solve() -> None:
-    data = sys.stdin.read().strip().split()
-    if not data:
-        return
-    n, m = map(int, data[:2])
-    # dp[i][j] = True, если позиция (i, j) выигрышная для игрока, чей ход
-    dp = [[False] * (m + 1) for _ in range(n + 1)]
-    # dp[0][0] = False по умолчанию
-    for i in range(n + 1):
-        for j in range(m + 1):
-            if i == 0 and j == 0:
-                continue
-            # перебираем все возможные ходы
-            if i >= 1 and not dp[i - 1][j]:
-                dp[i][j] = True
-            elif j >= 1 and not dp[i][j - 1]:
-                dp[i][j] = True
-            elif i >= 2 and not dp[i - 2][j]:
-                dp[i][j] = True
-            elif j >= 2 and not dp[i][j - 2]:
-                dp[i][j] = True
-            elif i >= 2 and j >= 1 and not dp[i - 2][j - 1]:
-                dp[i][j] = True
-            elif i >= 1 and j >= 2 and not dp[i - 1][j - 2]:
-                dp[i][j] = True
-    print("Win" if dp[n][m] else "Lose")
+def fib(n: int) -> int:
+    """Возвращает n-е число Фибоначчи (F0 = 0, F1 = 1) по модулю MOD."""
+    if n == 0:
+        return 0
+    def _fib(k: int):
+        if k == 0:
+            return (0, 1)
+        a, b = _fib(k >> 1)
+        c = (a * ((b * 2 - a) % MOD)) % MOD
+        d = (a * a + b * b) % MOD
+        if k & 1:
+            return (d, (c + d) % MOD)
+        else:
+            return (c, d)
+    return _fib(n)[0]
+
+def main():
+    N = int(input().strip())
+    if N == 0:
+        print(1)          # пустая сумма
+    else:
+        print(fib(N) % MOD)
 
 if __name__ == "__main__":
-    solve()
+    main()
